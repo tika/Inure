@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 public abstract class CmdBase implements CommandExecutor, TabExecutor {
 
+    public abstract String getName();
     public abstract List<SubcmdBase> getSubcommands();
     public abstract void perform(CommandSender sender, org.bukkit.command.Command command, String label, String[] args);
     public abstract List<String> getTabArgs(CommandSender sender, String[] args);

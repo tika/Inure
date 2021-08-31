@@ -4,6 +4,7 @@ import one.tika.inure.Inure;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,19 +20,21 @@ public class Options {
     private FileConfiguration dataConfig = null;
     private final String fileName;
     private File configFile = null;
+    private final JavaPlugin plugin;
 
-    public Options(String fileName) {
+    public Options(JavaPlugin plugin, String fileName) {
+        this.plugin = plugin;
         this.fileName = fileName;
         saveDefaultConfig();
     }
 
     public void reloadConfig() {
         if (this.configFile == null)
-            this.configFile = new File(Inure.getPlugin().getDataFolder(), fileName);
+            this.configFile = new File(plugin.getDataFolder(), fileName);
 
         this.dataConfig = YamlConfiguration.loadConfiguration(this.configFile);
 
-        InputStream defaultStream = Inure.getPlugin().getResource(fileName);
+        InputStream defaultStream = plugin.getResource(fileName);
         if (defaultStream != null) {
             YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defaultStream));
             this.dataConfig.setDefaults(defaultConfig);
@@ -52,16 +55,16 @@ public class Options {
         try {
             this.getConfig().save(this.configFile);
         } catch (IOException e) {
-            Inure.getPlugin().getLogger().log(Level.SEVERE, "Could not save data to " + this.configFile, e);
+            plugin.getLogger().log(Level.SEVERE, "Could not save data to " + this.configFile, e);
         }
     }
 
     public void saveDefaultConfig() {
         if (this.configFile == null)
-            this.configFile = new File(Inure.getPlugin().getDataFolder(), fileName);
+            this.configFile = new File(plugin.getDataFolder(), fileName);
 
         if (!this.configFile.exists()) {
-            Inure.getPlugin().saveResource(fileName, false);
+            plugin.saveResource(fileName, false);
         }
     }
 

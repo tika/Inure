@@ -1,24 +1,34 @@
 package one.tika.inure;
 
 import one.tika.inure.menu.Menu;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public final class Inure {
+import java.util.Arrays;
+import java.util.logging.Level;
 
-    private static JavaPlugin plugin;
+public final class Inure extends JavaPlugin implements Listener {
 
-    public static JavaPlugin getPlugin() {
-        return plugin;
+    @Override
+    public void onEnable() {
+        getServer().getPluginManager().registerEvents(this, this);
+        getLogger().log(Level.INFO, "Inure powering " + getInurePlugins() + " plugins.");
     }
 
-    public static void setPlugin(JavaPlugin plugin) {
-        Inure.plugin = plugin;
+    private int getInurePlugins() {
+        return (int) Arrays.stream(getServer()
+                .getPluginManager()
+                .getPlugins())
+                .filter(pl -> pl.getDescription().getDepend().contains(getDescription().getName()))
+                .count();
     }
 
-    public static void onGuiClick(InventoryClickEvent event) {
+    @EventHandler
+    public void onGuiClick(InventoryClickEvent event) {
         InventoryHolder holder = event.getInventory().getHolder();
 
         //If the holder extends Menu (is a custom menu)
@@ -32,7 +42,8 @@ public final class Inure {
         }
     }
 
-    public static void onGuiClose(InventoryCloseEvent event) {
+    @EventHandler
+    public void onGuiClose(InventoryCloseEvent event) {
         InventoryHolder holder = event.getInventory().getHolder();
 
         if (holder instanceof Menu) {
